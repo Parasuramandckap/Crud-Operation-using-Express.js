@@ -12,7 +12,7 @@ app.listen(3000, () => {
     console.log('Server is running at port 3000');
 });
 
-// app.set('views',path.join(__dirname,'views'));
+
  
 //set view engine
 app.set('view engine', 'ejs');
@@ -33,13 +33,12 @@ connection.connect(function(error){
 
 
 app.get('/',(req, res) => {
-    // res.send('CRUD Operation using NodeJS / ExpressJS / MySQL');
     let sql = "SELECT * FROM users";
-    connection.query(sql, (err, rows) => {
+    connection.query(sql, (err, result) => {
         if(err) throw err;
         res.render('user_index', {
             title : 'CRUD Operation using NodeJS / ExpressJS / MySQL',
-            users : rows
+            users : result
         });
     });
 });
@@ -55,16 +54,42 @@ app.post("/save-user",(req,res)=>{
     var sql = `INSERT INTO users (email,password)VALUES(?, ?)`;
     connection.query(sql, [email,password], function (err, data) {
         if (err) throw err;
+        res.redirect("/");
     });
-    res.redirect("/");
+    
 })
 
 app.get("/edit/:userId",(req,res)=>{
     let EditId = req.params.userId;
-    let sql = `SELECT * FROM users WHERE id=${EditId}`;
+    
+    let sql = "SELECT * FROM users WHERE id="+EditId;
     connection.query(sql,(err,result)=>{
+        if(err)throw err;
+        res.render("user_edit",{
+            title:"User Edit page",
+            UserEditDetails : result
+        })
+        
+    })
+    
+})
+
+app.post("/update-user",(req,res)=>{
+    let UserId = req.body.id;
+    let email = req.body.email;
+    let password = req.body.password;
+    let sql = "UPDATE users SET email=?,password=? WHERE id = ?";
+    connection.query(sql,[email,password,UserId],(err,result)=>{
         if(err) throw err;
-        res.render("user_edit",{title:"user edit page",userDetials:result})
+        res.redirect("/")
     })
 })
 
+app.get("/delete/:userId",(req,res)=>{
+    let DeleteId = req.params.userId;
+    let sql = "DELETE FROM users WHERE id="+DeleteId;
+    connection.query(sql,(err,result)=>{
+        if(err)throw err;
+        res.redirect("/");
+    });
+})
