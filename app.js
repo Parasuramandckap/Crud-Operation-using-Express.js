@@ -21,9 +21,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 const connection=mysql.createConnection({
     host:'localhost',
-    user:'root',
-    password:'',
-    database:'test'
+    user:'dckap',
+    password:'Dckap2023Ecommerce',
+    database:'auth_node'
 });
  
 connection.connect(function(error){
